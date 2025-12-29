@@ -1,0 +1,249 @@
+Ngắn gọn: Đây là đồ án demo một hệ thống WAF (Web Application Firewall) đơn giản tích hợp mô-đun học máy để phát hiện và phân loại request là normal / attack (ví dụ SQLi, XSS). Toàn bộ chạy cục bộ (localhost) để an toàn, phục vụ mục đích học thuật.
+
+Mục tiêu dự án
+
+Xây web app dễ bị tấn công (vulnerable) để làm target (SQLi, XSS).
+
+Xây WAF proxy (ban đầu rule-based) có thể tích hợp model ML để chặn request nguy hiểm.
+
+Thu thập log request → tiền xử lý → huấn luyện model phân loại normal / attack.
+
+Tạo script mô phỏng tấn công để đánh giá hiệu năng WAF và model.
+
+Viết báo cáo kết quả (metrics, false positives/negatives, đề xuất cải tiến).
+
+Kiến trúc & flow tổng quan
+[Attack Simulator]  -->  [WAF Proxy (port 5000)]  -->  [Vulnerable App (port 5001)]
+                           ↑
+                       ML Model
+                           ↓
+                    Training pipeline
+                   (logs -> model.joblib)
+
+
+Client (hoặc attack_sim) gửi request tới WAF proxy.
+
+WAF inspect request (rules hoặc gọi model). Nếu allow → forward tới vuln app; nếu block → trả 403 và log.
+
+WAF/logs được dùng làm dataset để train model.
+
+Model được lưu (joblib) và tích hợp vào WAF.
+
+Thành phần (file chính)
+
+vuln_app.py — Flask app dễ bị tấn công (endpoints: /search (SQLi), /comment (XSS)).
+
+waf_proxy.py — WAF proxy (rule-based). Có chỗ dễ thay bằng inference ML.
+
+attack_sim.py — Script mô phỏng gửi payloads (SQLi/XSS), hỗ trợ fake X-Forwarded-For.
+
+train_firewall.py — Script tiền xử lý + huấn luyện model (TF-IDF + encoder + model), lưu firewall_model_bundle.joblib.
+
+infer.py — (wrapper) load bundle và chạy predict (để WAF gọi).
+
+requests_log.csv — (sản phẩm) log request chuẩn để huấn luyện.
+
+comments.txt, demo.db — dữ liệu demo do vuln_app.py tạo.
+
+README.md — tài liệu này.
+
+Công nghệ dùng
+
+Ngôn ngữ: Python 3.8+
+
+Web: Flask
+
+ML: scikit-learn, imblearn (SMOTE) (tùy chọn)
+
+Data: pandas, numpy
+
+Lưu model: joblib
+
+Gửi HTTP: requests
+
+DB nhẹ: SQLite (chỉ demo)
+
+Yêu cầu cài đặt
+
+(Trên máy dev)
+
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+
+requirements.txt (gợi ý)
+
+flask
+requests
+pandas
+scikit-learn
+joblib
+imbalanced-learn
+numpy
+shap        # tuỳ chọn nếu dùng explainability
+
+Chạy demo (step-by-step)
+
+Cảnh báo: Chỉ chạy trên máy local/VM bạn kiểm soát. Không dùng để tấn công hệ thống khác.
+
+Start vulnerable app
+
+python vuln_app.py
+# app chạy ở http://127.0.0.1:5001
+
+
+Mở http://127.0.0.1:5001/comment để thử gửi <script>alert(1)</script> (stored XSS demo).
+
+Mở http://127.0.0.1:5001/search?q=alice để thử truy vấn (SQL demo).
+
+Start WAF proxy
+
+python waf_proxy.py
+# proxy chạy ở http://127.0.0.1:5000 và forward tới vuln_app
+
+
+WAF chặn payloads khớp signature và log mọi request.
+
+Chạy attack simulator
+
+python attack_sim.py
+# script gửi nhiều payload tới proxy và fake IPs
+
+
+Quan sát
+
+Console waf_proxy.py hiển thị log chặn.
+
+requests_log.csv (hoặc SQLite) sẽ chứa các bản ghi (dùng để train).
+
+Định dạng log / CSV dành cho huấn luyện
+
+File CSV (header gợi ý):
+
+timestamp,src_ip,method,path,payload,user_agent,headers,label
+2025-11-05T21:00:00,127.0.0.1,GET,/search,"' OR 1=1--","Attacker/1.0","{...}",attack
+2025-11-05T21:00:05,127.0.0.1,POST,/comment,"hello world","Mozilla/5.0","{...}",normal
+
+
+Label: normal hoặc attack. (Nếu bạn muốn phân loại thêm, có thể sqli/xss/other.)
+
+Pipeline huấn luyện (tóm tắt)
+
+Load CSV → clean missing.
+
+Map label → binary (0=normal, 1=attack).
+
+Feature engineering:
+
+Payload → TF-IDF (char/ngram 1–3) hoặc word-level ngrams.
+
+payload_len, count_special_chars, count_digits.
+
+method → OneHotEncoder.
+
+user_agent_len hoặc simple UA categorization.
+
+behavioral features: requests_per_minute_by_ip (nếu có timestamps).
+
+Train/test split (stratify), xử lý imbalance (class_weight hoặc SMOTE).
+
+Chọn model: LogisticRegression (fast & explainable) hoặc RandomForest/XGBoost.
+
+Tune hyperparams (GridSearchCV) nếu cần.
+
+Evaluate: precision, recall, F1, confusion matrix, PR-curve.
+
+Save bundle {tfidf, encoders, model} bằng joblib.
+
+Cách tích hợp model vào WAF
+
+Trong waf_proxy.py thay hàm is_attack() bằng:
+
+load bundle joblib
+
+build feature vector từ request (theo pipeline training)
+
+score = model.predict_proba(X)[,1]
+
+nếu score >= threshold → block, else allow.
+
+Tùy chỉnh threshold dựa trên precision/recall tradeoff.
+
+Lệnh test ví dụ (curl)
+
+Test XSS (POST comment) qua proxy:
+
+curl -X POST "http://127.0.0.1:5000/comment" -d "text=<script>alert(1)</script>" -H "User-Agent: Attacker/1.0" -v
+
+
+Test SQLi (GET search) qua proxy:
+
+curl "http://127.0.0.1:5000/search?q=' OR 1=1--" -H "User-Agent: Attacker/1.0" -v
+
+
+Fake IP:
+
+curl -H "X-Forwarded-For: 203.0.113.5" ...
+
+Tiêu chí đánh giá (cho đồ án)
+
+Fuctional: run 3 thành phần (vuln app, waf proxy, attack sim) và có logs.
+
+ML: model trained + bundle; evaluation report (precision/recall/F1).
+
+Demo metric target: F1 ≥ 0.7 cho class attack (tham khảo).
+
+Demo: mô phỏng tấn công, show examples bị chặn và lọt qua.
+
+Báo cáo: quy trình, EDA, feature chọn, metrics, 3 ví dụ FP/FN, đề xuất cải tiến.
+
+Lưu ý đạo đức & pháp lý
+
+Chỉ chạy thử trên môi trường bạn kiểm soát (máy cá nhân, VM lab).
+
+Không dùng code này để tấn công trang/ứng dụng không phải của bạn.
+
+Tài liệu và code phục vụ mục học thuật.
+
+Mở rộng & nâng cấp (nếu muốn)
+
+Thay rule-based bằng model ML (xây pipeline inference trong WAF).
+
+Bổ sung tính năng real-time rate-limiting (throttle IP).
+
+Dùng explainability (SHAP) để giải thích quyết định model.
+
+Triển khai container (Docker) cho reproducibility.
+
+Thu thập dữ liệu thực (anonymized) để cải thiện model.
+
+Timeline ngắn (gợi ý)
+
+Ngày 1–2: setup vuln_app + waf_proxy + logging + attack_sim.
+
+Ngày 3: thu thập log mẫu, EDA, feature design.
+
+Ngày 4–5: train model, evaluate, export bundle.
+
+Ngày 6: tích hợp model vào proxy, test, viết báo cáo.
+
+Deliverables (cuối đồ án)
+
+Code: vuln_app.py, waf_proxy.py, attack_sim.py, train_firewall.py, infer.py.
+
+Data: requests_log.csv
+
+Model: firewall_model_bundle.joblib
+
+Báo cáo: EDA, metrics, sample FP/FN, hướng cải tiến.
+
+Liên hệ & ghi chú
+
+Nếu bạn muốn, mình có thể:
+
+(A) tạo mẫu requests_labeled.csv ~500 dòng, hoặc
+
+(B) viết sẵn train_firewall.py hoàn chỉnh, hoặc
+
+(C) tích hợp model vào waf_proxy.py (bạn chỉ cần chạy).

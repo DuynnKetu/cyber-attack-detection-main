@@ -1,0 +1,313 @@
+============================================================
+DATASET OVERVIEW
+============================================================
+
+📊 Shape: (61065, 17)
+📋 Columns: 17
+📝 Rows: 61,065
+💾 Memory: 70.80 MB
+
+============================================================
+COLUMN NAMES & TYPES
+============================================================
+Unnamed: 0         object
+Method             object
+User-Agent         object
+Pragma             object
+Cache-Control      object
+Accept             object
+Accept-encoding    object
+Accept-charset     object
+language           object
+host               object
+cookie             object
+content-type       object
+connection         object
+lenght             object
+content            object
+classification      int64
+URL                object
+dtype: object
+
+
+
+============================================================
+
+============================================================
+FIRST 5 ROWS
+============================================================
+Unnamed: 0	Method	User-Agent	Pragma	Cache-Control	Accept	Accept-encoding	Accept-charset	language	host	cookie	content-type	connection	lenght	content	classification	URL
+0	Normal	GET	Mozilla/5.0 (compatible; Konqueror/3.5; Linux)...	no-cache	no-cache	text/xml,application/xml,application/xhtml+xml...	x-gzip, x-deflate, gzip, deflate	utf-8, utf-8;q=0.5, *;q=0.5	en	localhost:8080	JSESSIONID=1F767F17239C9B670A39E9B10C3825F4	NaN	close	NaN	NaN	0	http://localhost:8080/tienda1/index.jsp HTTP/1.1
+1	Normal	GET	Mozilla/5.0 (compatible; Konqueror/3.5; Linux)...	no-cache	no-cache	text/xml,application/xml,application/xhtml+xml...	x-gzip, x-deflate, gzip, deflate	utf-8, utf-8;q=0.5, *;q=0.5	en	localhost:8080	JSESSIONID=81761ACA043B0E6014CA42A4BCD06AB5	NaN	close	NaN	NaN	0	http://localhost:8080/tienda1/publico/anadir.j...
+2	Normal	POST	Mozilla/5.0 (compatible; Konqueror/3.5; Linux)...	no-cache	no-cache	text/xml,application/xml,application/xhtml+xml...	x-gzip, x-deflate, gzip, deflate	utf-8, utf-8;q=0.5, *;q=0.5	en	localhost:8080	JSESSIONID=933185092E0B668B90676E0A2B0767AF	application/x-www-form-urlencoded	Connection: close	Content-Length: 68	id=3&nombre=Vino+Rioja&precio=100&cantidad=55&...	0	http://localhost:8080/tienda1/publico/anadir.j...
+3	Normal	GET	Mozilla/5.0 (compatible; Konqueror/3.5; Linux)...	no-cache	no-cache	text/xml,application/xml,application/xhtml+xml...	x-gzip, x-deflate, gzip, deflate	utf-8, utf-8;q=0.5, *;q=0.5	en	localhost:8080	JSESSIONID=8FA18BA82C5336D03D3A8AFA3E68CBB0	NaN	close	NaN	NaN	0	http://localhost:8080/tienda1/publico/autentic...
+4	Normal	POST	Mozilla/5.0 (compatible; Konqueror/3.5; Linux)...	no-cache	no-cache	text/xml,application/xml,application/xhtml+xml...	x-gzip, x-deflate, gzip, deflate	utf-8, utf-8;q=0.5, *;q=0.5	en	localhost:8080	JSESSIONID=7104E6C68A6BCF1423DAE990CE49FEE2	application/x-www-form-urlencoded	Connection: close	Content-Length: 63	modo=entrar&login=choong&pwd=d1se3ci%F3n&remem...	0	http://localhost:8080/tienda1/publico/autentic...
+
+
+
+ALL COLUMNS:
+ 1. Unnamed: 0
+ 2. Method
+ 3. User-Agent
+ 4. Pragma
+ 5. Cache-Control
+ 6. Accept
+ 7. Accept-encoding
+ 8. Accept-charset
+ 9. language
+10. host
+11. cookie
+12. content-type
+13. connection
+14. lenght
+15. content
+16. classification
+17. URL
+
+
+
+============================================================
+SAMPLE VALUES FOR EACH COLUMN
+============================================================
+
+📌 Unnamed: 0:
+['Normal' 'Normal' 'Normal']
+   Type: object
+   Nulls: 0
+   Unique: 2
+
+📌 Method:
+['GET' 'GET' 'POST']
+   Type: object
+   Nulls: 0
+   Unique: 3
+
+📌 User-Agent:
+['Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)'
+ 'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)'
+ 'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 Pragma:
+['no-cache' 'no-cache' 'no-cache']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 Cache-Control:
+['no-cache' 'no-cache' 'no-cache']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 Accept:
+['text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'
+ 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'
+ 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5']
+   Type: object
+   Nulls: 397
+   Unique: 1
+
+📌 Accept-encoding:
+['x-gzip, x-deflate, gzip, deflate' 'x-gzip, x-deflate, gzip, deflate'
+ 'x-gzip, x-deflate, gzip, deflate']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 Accept-charset:
+['utf-8, utf-8;q=0.5, *;q=0.5' 'utf-8, utf-8;q=0.5, *;q=0.5'
+ 'utf-8, utf-8;q=0.5, *;q=0.5']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 language:
+['en' 'en' 'en']
+   Type: object
+   Nulls: 0
+   Unique: 1
+
+📌 host:
+['localhost:8080' 'localhost:8080' 'localhost:8080']
+   Type: object
+   Nulls: 0
+   Unique: 2
+
+📌 cookie:
+['JSESSIONID=1F767F17239C9B670A39E9B10C3825F4'
+ 'JSESSIONID=81761ACA043B0E6014CA42A4BCD06AB5'
+ 'JSESSIONID=933185092E0B668B90676E0A2B0767AF']
+   Type: object
+   Nulls: 0
+   Unique: 61065
+
+📌 content-type:
+[nan nan 'application/x-www-form-urlencoded']
+   Type: object
+   Nulls: 43088
+   Unique: 1
+
+📌 connection:
+['close' 'close' 'Connection: close']
+   Type: object
+   Nulls: 0
+   Unique: 2
+
+📌 lenght:
+[nan nan 'Content-Length: 68']
+   Type: object
+   Nulls: 43088
+   Unique: 382
+
+📌 content:
+[nan nan
+ 'id=3&nombre=Vino+Rioja&precio=100&cantidad=55&B1=A%F1adir+al+carrito']
+   Type: object
+   Nulls: 43088
+   Unique: 12091
+
+📌 classification:
+[0 0 0]
+   Type: int64
+   Nulls: 0
+   Unique: 2
+
+📌 URL:
+['http://localhost:8080/tienda1/index.jsp HTTP/1.1'
+ 'http://localhost:8080/tienda1/publico/anadir.jsp?id=3&nombre=Vino+Rioja&precio=100&cantidad=55&B1=A%F1adir+al+carrito HTTP/1.1'
+ 'http://localhost:8080/tienda1/publico/anadir.jsp HTTP/1.1']
+   Type: object
+   Nulls: 0
+   Unique: 13498
+
+
+
+
+   
+============================================================
+MISSING VALUES
+============================================================
+          Column  Missing  Percentage
+11  content-type    43088   70.560878
+13        lenght    43088   70.560878
+14       content    43088   70.560878
+5         Accept      397    0.650127
+
+
+
+============================================================
+SEARCHING FOR LABEL COLUMN...
+============================================================
+
+📍 Unnamed: 0 - Unique values (2):
+['Normal' 'Anomalous']
+
+📍 Method - Unique values (3):
+['GET' 'POST' 'PUT']
+
+📍 User-Agent - Unique values (1):
+['Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)']
+
+📍 Pragma - Unique values (1):
+['no-cache']
+
+📍 Cache-Control - Unique values (1):
+['no-cache']
+
+📍 Accept - Unique values (2):
+['text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'
+ nan]
+
+📍 Accept-encoding - Unique values (1):
+['x-gzip, x-deflate, gzip, deflate']
+
+📍 Accept-charset - Unique values (1):
+['utf-8, utf-8;q=0.5, *;q=0.5']
+
+📍 language - Unique values (1):
+['en']
+
+📍 host - Unique values (2):
+['localhost:8080' 'localhost:9090']
+
+📍 content-type - Unique values (2):
+[nan 'application/x-www-form-urlencoded']
+
+📍 connection - Unique values (2):
+['close' 'Connection: close']
+
+📍 classification - Unique values (2):
+[0 1]
+
+
+
+============================================================
+SEARCHING FOR REQUEST/PAYLOAD COLUMNS...
+============================================================
+
+📍 User-Agent:
+   Avg length: 71 chars
+   Sample:
+   Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.8 (like Gecko)...
+
+📍 Accept:
+   Avg length: 98 chars
+   Sample:
+   text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5...
+
+📍 Accept-encoding:
+   Avg length: 32 chars
+   Sample:
+   x-gzip, x-deflate, gzip, deflate...
+
+📍 Accept-charset:
+   Avg length: 27 chars
+   Sample:
+   utf-8, utf-8;q=0.5, *;q=0.5...
+
+📍 cookie:
+   Avg length: 43 chars
+   Sample:
+   JSESSIONID=1F767F17239C9B670A39E9B10C3825F4...
+
+📍 content:
+   Avg length: 34 chars
+   Sample:
+   ...
+
+📍 URL:
+   Avg length: 90 chars
+   Sample:
+   http://localhost:8080/tienda1/index.jsp HTTP/1.1...
+
+
+
+
+   
+============================================================
+DATASET SUMMARY
+============================================================
+
+Total Rows:
+61065
+
+Total Columns:
+17
+
+Column Names:
+['Unnamed: 0', 'Method', 'User-Agent', 'Pragma', 'Cache-Control', 'Accept', 'Accept-encoding', 'Accept-charset', 'language', 'host', 'cookie', 'content-type', 'connection', 'lenght', 'content', 'classification', 'URL']
+
+Data Types:
+{'Unnamed: 0': dtype('O'), 'Method': dtype('O'), 'User-Agent': dtype('O'), 'Pragma': dtype('O'), 'Cache-Control': dtype('O'), 'Accept': dtype('O'), 'Accept-encoding': dtype('O'), 'Accept-charset': dtype('O'), 'language': dtype('O'), 'host': dtype('O'), 'cookie': dtype('O'), 'content-type': dtype('O'), 'connection': dtype('O'), 'lenght': dtype('O'), 'content': dtype('O'), 'classification': dtype('int64'), 'URL': dtype('O')}
+
+Missing Values:
+{'Unnamed: 0': 0, 'Method': 0, 'User-Agent': 0, 'Pragma': 0, 'Cache-Control': 0, 'Accept': 397, 'Accept-encoding': 0, 'Accept-charset': 0, 'language': 0, 'host': 0, 'cookie': 0, 'content-type': 43088, 'connection': 0, 'lenght': 43088, 'content': 43088, 'classification': 0, 'URL': 0}
+
+Numeric Columns:
+['classification']
+
+Text Columns:
+['Unnamed: 0', 'Method', 'User-Agent', 'Pragma', 'Cache-Control', 'Accept', 'Accept-encoding', 'Accept-charset', 'language', 'host', 'cookie', 'content-type', 'connection', 'lenght', 'content', 'URL']

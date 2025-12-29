@@ -1,0 +1,469 @@
+{
+	"info": {
+		"_postman_id": "waf-test-collection-2024",
+		"name": "WAF Security Test Collection",
+		"description": "20 test cases để test Hybrid WAF (Rule-based + ML Detection)\n\n**Setup:**\n1. Chạy: python web_app.py (port 5001)\n2. Chạy: python waf_proxy.py (port 5000)\n3. Import file này vào Postman\n4. Test qua WAF: http://localhost:5000\n\n**Expected Results:**\n- ✅ Normal requests (1-8): Status 200 (ALLOWED)\n- ❌ Attack requests (9-20): Status 403 (BLOCKED)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "✅ NORMAL REQUESTS (Should be ALLOWED)",
+			"item": [
+				{
+					"name": "1. Home Page (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": [""]
+						},
+						"description": "Normal homepage request - Should pass both Layer 1 (Rules) and Layer 2 (ML)"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get Users API (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/users",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "users"]
+						},
+						"description": "Normal API request - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Search - Normal Query (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=python+tutorial",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "python+tutorial"
+								}
+							]
+						},
+						"description": "Normal search query - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Post Comment - Normal (POST)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"This is a great article! Thanks for sharing.\",\n    \"author\": \"John Doe\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["comment"]
+						},
+						"description": "Normal comment submission - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "5. File Access - Normal (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/file?path=readme.txt",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["file"],
+							"query": [
+								{
+									"key": "path",
+									"value": "readme.txt"
+								}
+							]
+						},
+						"description": "Normal file access - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Login - Normal (POST)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "mypassword123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5000/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["login"]
+						},
+						"description": "Normal login request - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Health Check (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/health",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["health"]
+						},
+						"description": "Backend health check - Should be allowed"
+					},
+					"response": []
+				},
+				{
+					"name": "8. WAF Statistics (GET)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/waf/stats",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["waf", "stats"]
+						},
+						"description": "Check WAF statistics - Should be allowed"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "❌ SQL INJECTION ATTACKS (Should be BLOCKED)",
+			"item": [
+				{
+					"name": "9. SQLi - UNION SELECT Attack",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=' UNION SELECT username,password FROM users--",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "' UNION SELECT username,password FROM users--"
+								}
+							]
+						},
+						"description": "SQL Injection with UNION SELECT - Should be BLOCKED by Layer 1 (Rules)"
+					},
+					"response": []
+				},
+				{
+					"name": "10. SQLi - Boolean-based (OR 1=1)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=admin' OR '1'='1",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "admin' OR '1'='1"
+								}
+							]
+						},
+						"description": "Classic OR 1=1 SQLi - Should be BLOCKED by Layer 1"
+					},
+					"response": []
+				},
+				{
+					"name": "11. SQLi - DROP TABLE Attack",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=1; DROP TABLE users--",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "1; DROP TABLE users--"
+								}
+							]
+						},
+						"description": "DROP TABLE SQLi attack - Should be BLOCKED by Layer 1"
+					},
+					"response": []
+				},
+				{
+					"name": "12. SQLi - Time-based Blind",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=1' AND SLEEP(5)--",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "1' AND SLEEP(5)--"
+								}
+							]
+						},
+						"description": "Time-based blind SQLi - Should be BLOCKED"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "❌ XSS ATTACKS (Should be BLOCKED)",
+			"item": [
+				{
+					"name": "13. XSS - Basic Script Tag",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"<script>alert('XSS')</script>\",\n    \"author\": \"Hacker\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["comment"]
+						},
+						"description": "Basic XSS with script tag - Should be BLOCKED by Layer 1"
+					},
+					"response": []
+				},
+				{
+					"name": "14. XSS - Image onerror",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=<img src=x onerror=alert(1)>",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "<img src=x onerror=alert(1)>"
+								}
+							]
+						},
+						"description": "XSS via image onerror - Should be BLOCKED by Layer 1"
+					},
+					"response": []
+				},
+				{
+					"name": "15. XSS - SVG onload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"<svg onload=alert(document.cookie)>\",\n    \"author\": \"Attacker\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/comment",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["comment"]
+						},
+						"description": "XSS with SVG onload - Should be BLOCKED"
+					},
+					"response": []
+				},
+				{
+					"name": "16. XSS - JavaScript Protocol",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/search?q=<a href='javascript:alert(1)'>Click</a>",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "<a href='javascript:alert(1)'>Click</a>"
+								}
+							]
+						},
+						"description": "XSS via javascript: protocol - Should be BLOCKED"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "❌ PATH TRAVERSAL ATTACKS (Should be BLOCKED)",
+			"item": [
+				{
+					"name": "17. Path Traversal - /etc/passwd",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/file?path=../../etc/passwd",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["file"],
+							"query": [
+								{
+									"key": "path",
+									"value": "../../etc/passwd"
+								}
+							]
+						},
+						"description": "Path traversal to /etc/passwd - Should be BLOCKED by Layer 1"
+					},
+					"response": []
+				},
+				{
+					"name": "18. Path Traversal - Windows SAM",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/file?path=..\\..\\windows\\system32\\config\\sam",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["file"],
+							"query": [
+								{
+									"key": "path",
+									"value": "..\\..\\windows\\system32\\config\\sam"
+								}
+							]
+						},
+						"description": "Windows path traversal - Should be BLOCKED"
+					},
+					"response": []
+				},
+				{
+					"name": "19. Path Traversal - Encoded",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/file?path=%2e%2e%2f%2e%2e%2fetc%2fpasswd",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["file"],
+							"query": [
+								{
+									"key": "path",
+									"value": "%2e%2e%2f%2e%2e%2fetc%2fpasswd"
+								}
+							]
+						},
+						"description": "URL-encoded path traversal - Should be BLOCKED by Layer 2 (ML)"
+					},
+					"response": []
+				},
+				{
+					"name": "20. Path Traversal - Deep Nesting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/file?path=../../../../../../../../etc/shadow",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["file"],
+							"query": [
+								{
+									"key": "path",
+									"value": "../../../../../../../../etc/shadow"
+								}
+							]
+						},
+						"description": "Deep path traversal - Should be BLOCKED"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
